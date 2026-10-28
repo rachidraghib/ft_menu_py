@@ -1,0 +1,311 @@
+:root {
+  --primary: #d9534f;
+  --dark: #2c3e50;
+  --light: #f8f9fa;
+  --border: #e2e8f0;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+  background-color: var(--light);
+  color: var(--dark);
+}
+
+nav {
+  background: skyblue;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--dark);
+  font-weight: bold;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  margin-top: 2rem;
+}
+.btn-danger {
+  background: #e3342f;
+  color: white;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Menu Grid System */
+.category-title {
+  border-left: 5px solid var(--primary);
+  padding-left: 10px;
+  margin-top: 3rem;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.menu-card {
+  background: skyblue;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.menu-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.price {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+/* Simple Form Design */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* CRUD Table UI */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-top: 1.5rem;
+}
+
+th,
+td {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+th {
+  background: #edf2f7;
+}
+
+/* Styling updates for item thumbnails and public display cards */
+.menu-card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover; /* Uniformly crops photo dimensions without warping aspect ratios */
+  border-radius: 6px;
+  background-color: #e2e8f0;
+}
+
+.table-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-top: 1rem;
+  vertical-align: middle;
+}
+/* Navigation Categorization Links Bar styling */
+.nav-links-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.category-nav-bar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 2rem;
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto; /* Horizontal scroll wrapper on mobile layouts */
+  white-space: nowrap;
+}
+
+.category-nav-link {
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.category-nav-link:hover {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 2px;
+}
+
+/* Admin Inline Dropdown Element Styles */
+.select-status {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background-color: white;
+  cursor: pointer;
+}
+
+.btn-update-status {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  background: var(--dark);
+  color: white;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.btn-update-status:hover {
+  background: #475569;
+}
+
+/* Payment Processing Screen elements wrapper */
+.payment-box {
+  background: #ffffff;
+  max-width: 500px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
+}
+
+.payment-row-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.secure-lock-footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 1.5rem;
+}
+
+/* Itemized Receipt Accordion UI Layout */
+.receipt-toggle-btn {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.receipt-toggle-btn:hover {
+  text-decoration: underline;
+}
+
+.itemized-receipt-box {
+  background: var(--light);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 0.35rem 0;
+  color: #475569;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.receipt-row:last-child {
+  border-bottom: none;
+}
+
+/* Split Layout Configuration Grid */
+.menu-page-wrapper {
+  display: grid;
+  /* Column 1 (Left): 2.5 parts flexibility for the Menu */
+  /* Column 2 (Right): 1 part flexibility for the Cart */
+  grid-template-columns: 2.5fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  position: relative;
+  width: 100%;
+}
+
+/* Main Food Menu Section on the Left */
+.menu-page-wrapper main {
+  min-width: 0; /* Prevents flexible child grids from breaking containment */
+}
+
+/* Scroll-Fixed Shopping Cart Panel on the Right */
+.menu-page-wrapper aside.cart-panel {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+
+  /* Sticky Sidebar configuration matrix */
+  position: -webkit-sticky; /* Support for Safari */
+  position: sticky;
+  top: 2rem; /* Locks 2rem beneath viewport top edge during scrolling action */
+  z-index: 10;
+
+  /* Height constraint to prevent spilling off the viewport screen */
+  max-height: calc(100vh - 6rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsiveness fallback for tablet/mobile screen layouts */
+@media (max-width: 992px) {
+  .menu-page-wrapper {
+    grid-template-columns: 1fr; /* Collapses into a single row column */
+  }
+
+  .menu-page-wrapper aside.cart-panel {
+    position: static !important; /* Disables freezing on tight screens */
+    width: 100% !important;
+    max-height: none !important;
+  }
+}

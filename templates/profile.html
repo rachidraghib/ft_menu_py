@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 850px; margin: 2rem auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="margin: 0;">Your Account Dashboard</h2>
+        <a href="/" class="btn btn-primary" style="background: #64748b;">← Back to Menu</a>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+        <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: var(--dark);">📜 Personal Purchase History</h3>
+
+        {% if orders %}
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                      <th>Receipt ID</th>
+                       <th>Placed At</th>
+                       <th>Type</th> 
+                       <th>Total Paid</th>
+                       <th>Kitchen Status</th>
+                       <th>Receipt Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem 0.75rem;"><strong>#{{ order.id }}</strong></td>
+                        <td style="padding: 1rem 0.75rem;">{{ order.created_at }}</td>
+                        <td style="padding: 1rem 0.75rem; font-weight: bold; color: #16a34a;">${{ "%.2f"|format(order.total_price) }}</td>
+                        <td style="padding: 1rem 0.75rem;">
+                            {% if order.status == 'Pending' %}
+                                <span style="background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">⏳ {{ order.status }}</span>
+                            {% elif order.status == 'Cooking' %}
+                                <span style="background: #dbeafe; color: #1d4ed8; padding: 4px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">🍳 {{ order.status }}</span>
+                            {% else %}
+                                <span style="background: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">✅ {{ order.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem 0.75rem;">
+                            <!-- Accordion Toggle Mechanism Control Anchor Link -->
+                            <button class="receipt-toggle-btn" onclick="toggleReceipt('receipt-{{ order.id }}')">
+                                View Items <span>▼</span>
+                            </button>
+                        </td>
+                    </tr>
+                    
+                    <!-- Hidden Expandable Secondary Container Block Row Layout -->
+                    <tr id="receipt-{{ order.id }}" style="display: none; background: #fafafa;">
+                        <td colspan="5" style="padding: 1rem 1.5rem;">
+                            <div class="itemized-receipt-box">
+                                <h4 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--dark); font-size: 0.95rem; border-bottom: 2px solid var(--border); padding-bottom: 0.25rem;">
+                                    Itemized Breakdown for Order #{{ order.id }}
+                                </h4>
+                                
+                                {% if items_by_order.get(order.id) %}
+                                    {% for item in items_by_order[order.id] %}
+                                        <div class="receipt-row">
+                                            <span>
+                                                <strong>{{ item.title }}</strong> 
+                                                <span style="color: #94a3b8; margin-left: 0.5rem;">x{{ item.quantity }}</span>
+                                            </span>
+                                            <span style="font-weight: 500;">
+                                                ${{ "%.2f"|format(item.price_at_purchase * item.quantity) }}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                    
+                                    <div style="display: flex; justify-content: flex-end; margin-top: 0.75rem; font-size: 0.85rem; color: #64748b;">
+                                        <span>Includes 8.25% Sales Tax</span>
+                                    </div>
+                                {% else %}
+                                    <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">No individual item logging records discovered for this transaction sequence.</p>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                <!-- Inside your loop row layout block -->
+                <td>{{ order.created_at }}</td>
+    <td>
+    <span style="font-weight:600; color:#475569; font-size:0.85rem;">
+        {{ order.fulfillment_type }} 
+        {% if order.fulfillment_details %}<small style="display:block; font-weight:normal; color:#94a3b8;">({{ order.fulfillment_details }})</small>{% endif %}
+    </span>
+    </td>
+    <td style="font-weight: bold; color: #16a34a;">${{ "%.2f"|format(order.total_price) }}</td>
+
+    {% endfor %}
+     </tbody>
+    </table>
+    {% else %}
+            <div style="text-align: center; padding: 3rem 0; color: #94a3b8;">
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">You haven't placed any orders yet!</p>
+                <a href="/" class="btn btn-primary">Order Something Delicious</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Dynamic DOM Layout Toggle Processor -->
+<script>
+    function toggleReceipt(rowId) {
+        const targetRow = document.getElementById(rowId);
+        const sourceButton = event.currentTarget;
+        const arrowIndicator = sourceButton.querySelector('span');
+
+        if (targetRow.style.display === 'none') {
+            targetRow.style.display = 'table-row';
+            arrowIndicator.innerText = '▲';
+            sourceButton.style.color = '#1e1b4b'; // Darken text color when tracking expanded
+        } else {
+            targetRow.style.display = 'none';
+            arrowIndicator.innerText = '▼';
+            sourceButton.style.color = '#4f46e5';
+        }
+    }
+</script>
+{% endblock %}

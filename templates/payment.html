@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Gateway Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="background: #f1f5f9;">
+
+    <div class="payment-box">
+        <h2 style="margin-top: 0; color: var(--dark); display: flex; justify-content: space-between;">
+            <span>🔒 Secure Checkout</span>
+            <span style="color: #16a34a;">${{ "%.2f"|format(grand_total) }}</span>
+        </h2>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 2rem;">Fatima Bistro Bites Payment Merchant Gateway.</p>
+
+        <form action="/process-payment" method="POST">
+            <!-- Hidden payload containing serialized cart metadata -->
+            <input type="hidden" name="cart_json" value="{{ cart_json }}">
+
+            <div class="form-group">
+                <label>Name on Credit Card</label>
+                <input type="text" name="card_name" placeholder="John Doe" required>
+            </div>
+
+            <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" name="card_number" maxlength="19" placeholder="4111 2222 3333 4444" id="cc-input" required>
+            </div>
+
+            <div class="payment-row-split">
+                <div class="form-group">
+                    <label>Expiration Date</label>
+                    <input type="text" placeholder="MM/YY" maxlength="5" required>
+                </div>
+                <div class="form-group">
+                    <label>Security CVV</label>
+                    <input type="password" placeholder="123" maxlength="3" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 0.75rem; background: #16a34a; margin-top: 1rem;">
+                Authorize Payment & Order
+            </button>
+        <!-- Insert inside the <form> tags in templates/payment.html -->
+       <input type="hidden" name="fulfillment_type" value="{{ fulfillment_type }}">
+       <input type="hidden" name="fulfillment_details" value="{{ fulfillment_details }}">
+
+        
+        </form>
+
+        <div class="secure-lock-footer">
+            🛡️ 256-Bit SSL Encrypted Transaction Connection Network Interface
+        </div>
+    </div>
+
+    <!-- Script to dynamically space out CC input fields for improved user experience -->
+    <script>
+        document.getElementById('cc-input').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim();
+        });
+    </script>
+</body>
+</html>

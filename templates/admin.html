@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Admin Management Control Panel</h2>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
+    <!-- Create Item Form Box -->
+    <div style="background: skyblue; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+        <h3 style="margin-top:0;">Add New Meal Item</h3>
+        
+        <!-- Note the multipart enctype addition below -->
+        <form action="/admin/add" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Item Name</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Price ($)</label>
+                <input type="number" step="0.01" name="price" required>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category_id">
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Meal Photo</label>
+                <input type="file" name="image" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save to Database</button>
+        </form>
+    </div>
+
+    <!-- Read / Update / Delete Database Items Table -->
+    <div>
+        <h3 style="margin-top: 0;">Live Menu Register</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Details</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            {% if item.image and item.image != 'default_meal.jpg' %}
+                                <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}" class="table-thumbnail" alt="">
+                            {% else %}
+                                <div class="table-thumbnail" style="background:#cbd5e1; display:inline-block; font-size:10px; text-align:center; line-height:50px; color:#64748b;">No Pic</div>
+                            {% endif %}
+                            <div>
+                                <strong>{{ item.title }}</strong><br>
+                                <small style="color:#64748b;">{{ item.description }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ item.category_name }}</td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>
+                        <a href="/admin/delete/{{ item.id }}" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.85rem;" onclick="return confirm('Are you sure you want to drop this item?');">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+<!-- Update the Admin Orders queue table columns inside templates/admin.html -->
+<thead>
+    <tr>
+        <th>Order ID</th>
+        <th>Customer Name</th>
+        <th>Fulfillment Details</th> <!-- Updated -->
+        <th>Bill Total</th>
+        <th>Status Control Actions</th>
+    </tr>
+</thead>
+<tbody>
+    {% for order in orders %}
+    <tr>
+        <td>#{{ order.id }}</td>
+        <td><strong>{{ order.name }}</strong></td>
+        <td>
+            <span style="background:#e0e7ff; color:#4338ca; padding:3px 8px; border-radius:4px; font-size:0.8rem; font-weight:600;">
+                {{ order.fulfillment_type }}
+            </span>
+            {% if order.fulfillment_details %}
+                <span style="display:block; font-size:0.85rem; color:#475569; margin-top:4px;">📍 {{ order.fulfillment_details }}</span>
+            {% endif %}
+        </td>
+        <td style="color:#16a34a; font-weight:bold;">${{ "%.2f"|format(order.total_price) }}</td>
+            <td>{{ order.created_at }}</td>
+            <td>
+                <!-- Context-Aware State Update Form Panel -->
+                <form action="/admin/order/status/{{ order.id }}" method="POST" style="display: flex; align-items: center;">
+                    <select name="status" class="select-status">
+                        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>⏳ Pending</option>
+                        <option value="Cooking" {% if order.status == 'Cooking' %}selected{% endif %}>🍳 Cooking</option>
+                        <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>✅ Completed</option>
+                    </select>
+                    <button type="submit" class="btn btn-update-status">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+    </div>
+</div>
+{% endblock %}

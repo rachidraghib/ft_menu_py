@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fatima Bistro Bites</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+        <a href="/" style="font-size: 1.4rem;"> Fatima Bistro Bites</a>
+        <div class="nav-links-container">
+            {% block inline_categories %}{% endblock %}
+            
+            <!-- Conditional Client Auth rendering hooks -->
+            {% if session.get('user_id') %}
+    <span style="color:#475569;">👤 Hi, <strong>{{ session.get('user_name') }}</strong></span>
+    <!-- New Order History Dashboard Link -->
+    <a href="/profile" style="margin-left: 10px; margin-right: 10px; color: #4f46e5; text-decoration: none; font-weight: 500;">My Orders</a>
+    <a href="/customer/logout" style="color:#e3342f; text-decoration: none;">Sign Out</a>
+     {% else %}
+    <a href="/customer/login">Guest Sign In</a>
+    <a href="/register" class="btn btn-primary" style="background:#4f46e5;">Sign Up</a>
+     {% endif %}
+
+            
+            <span style="color: #cbd5e1;">|</span>
+            {% if session.get('logged_in') %}
+                <a href="/admin">Dashboard</a>
+                <a href="/logout" class="btn btn-danger">Admin Out</a>
+            {% else %}
+                <a href="/login" style="font-size:0.85rem; color:#94a3b8;">Staff Panel</a>
+            {% endif %}
+        </div>
+    </nav>
+
+
+
+    {% block category_subnav %}{% endblock %}
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div style="padding: 1rem; background: #dbeafe; color:#1e40af; margin-bottom: 1rem; border-radius:4px;">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+    </body>
+
+</html>

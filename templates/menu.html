@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+
+<!-- 1. Inject category anchors directly inside the header menu area -->
+{% block category_subnav %}
+    {% if nav_categories %}
+    <div class="category-nav-bar">
+        {% for cat in nav_categories %}
+            <!-- Converts string to a clean matching slug anchor tag -->
+            <a href="#cat-{{ cat.name|replace(' ', '-')|lower }}" class="category-nav-link">
+                {{ cat.name }}
+            </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<h1 style="text-align: center; margin-bottom: 2rem;">Welcome to Bistro Bites</h1>
+
+<div class="menu-page-wrapper">
+    <!-- Left Column: Menu Items Catalog -->
+<main>
+    {% for category_name, items in menu.items() %}
+        
+          <h2 class="category-title" id="cat-{{ category_name|replace(' ', '-')|lower }}" style="scroll-margin-top: 140px; margin-top: 0; margin-bottom: 1.5rem;">
+           {{ category_name }}
+          </h2><div class="menu-grid" style="margin-bottom: 3rem;">
+                {% for item in items %}
+                    <div class="menu-card">
+                        <div>
+                            {% if item.image and item.image != 'default_meal.jpg' %}
+                                <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}" class="menu-card-img" alt="{{ item.title }}">
+                            {% else %}
+                                <div class="menu-card-img" style="display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:500;">🍲 No Image Available</div>
+                            {% endif %}
+
+                            <div class="menu-card-header">
+                                <h3>{{ item.title }}</h3>
+                                <span class="price">${{ "%.2f"|format(item.price) }}</span>
+                            </div>
+                            <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 0;">{{ item.description }}</p>
+                        </div>
+                        
+                        <button class="btn btn-primary add-to-cart-btn" 
+                                data-id="{{ item.id }}" 
+                                data-title="{{ item.title }}" 
+                                data-price="{{ item.price }}">
+                            Add to Cart
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+    {% endfor %}
+</main>
+
+   
+</div>
+<footer class="cart-panel">
+        <h3 class="cart-title">
+            <span>🛒 Your Order</span>
+            <span id="cart-count-badge" style="background: var(--primary); color: white; border-radius: 50%; padding: 2px 8px; font-size: 0.85rem;">0</span>
+        </h3>
+        
+        <div id="cart-empty-msg" style="color: #94a3b8; text-align: center; padding: 2rem 0;">
+            Your shopping cart is currently empty.
+        </div>
+
+        <div id="cart-items-container" class="cart-items-list"></div>
+
+       <!-- Replace your shopping cart panel summary area inside templates/menu.html with this markup block -->
+     <div class="cart-summary">
+    <!-- Fulfillment Mode Setup Select Option Block Elements Grid -->
+    <div style="margin-bottom: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem;">
+        <label style="display:block; font-size:0.85rem; font-weight:600; color:var(--dark); margin-bottom:0.35rem;">Fulfillment Choice</label>
+        <select id="fulfillment-selector" class="select-status" style="width:100%; padding:0.4rem;" onchange="adjustFulfillmentInputs()">
+            <option value="Dine-In">🍽️ Dine-In (At Table)</option>
+            <option value="Takeout" selected>🥡 Takeout (Pickup)</option>
+            <option value="Delivery">🚗 Delivery (To Door)</option>
+        </select>
+    </div>
+    </div>
+
+    <!-- Conditional Form input area that adjusts using JavaScript triggers -->
+    <div id="fulfillment-details-container" class="form-group" style="display:none; margin-bottom:1rem;">
+        <label id="fulfillment-label-text" style="font-size:0.85rem; font-weight:500;"></label>
+        <input type="text" id="fulfillment-input-field" placeholder="">
+    </div>
+
+    <div class="cart-row" style="font-weight: normal; font-size: 0.95rem; color: #64748b;">
+        <span>Subtotal</span><span id="cart-subtotal">$0.00</span>
+    </div>
+    <div class="cart-row" style="font-weight: normal; font-size: 0.95rem; color: #64748b;">
+        <span>Tax (8.25%)</span><span id="cart-tax">$0.00</span>
+    </div>
+    <div class="cart-row" style="font-size: 1.2rem; color: var(--dark); padding-top: 0.5rem; border-top: 1px solid var(--border);">
+        <span>Total</span><span id="cart-total">$0.00</span>
+    </div>
+    
+    <button id="checkout-btn" class="btn btn-primary" style="width: 100%; margin-top: 1rem; background: #22c55e;" disabled>
+        Place Order
+    </button>
+
+
+
+    </footer>
+
+
+<!-- Append these management functions directly to your existing script tags inside templates/menu.html -->
+<script>
+    function adjustFulfillmentInputs() {
+        const mode = document.getElementById('fulfillment-selector').value;
+        const container = document.getElementById('fulfillment-details-container');
+        const label = document.getElementById('fulfillment-label-text');
+        const input = document.getElementById('fulfillment-input-field');
+
+        if (mode === 'Dine-In') {
+            container.style.display = 'block';
+            label.innerText = 'Table Number';
+            input.placeholder = 'e.g., Table 5';
+            input.required = true;
+        } else if (mode === 'Delivery') {
+            container.style.display = 'block';
+            label.innerText = 'Delivery Address';
+            input.placeholder = 'e.g., 123 Main St, Apt 4B';
+            input.required = true;
+        } else {
+            container.style.display = 'none';
+            input.value = '';
+            input.required = false;
+        }
+    }
+
+    // Update your checkoutBtn click execution code inside templates/menu.html to collect fulfillment values:
+    checkoutBtn.addEventListener('click', () => {
+        if (cart.length === 0) return;
+        
+        const type = document.getElementById('fulfillment-selector').value;
+        const details = document.getElementById('fulfillment-input-field').value;
+
+        if ((type === 'Dine-In' || type === 'Delivery') && !details.trim()) {
+            alert('Please enter your table number or delivery address details!');
+            return;
+        }
+
+        fetch('/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart: cart })
+        })
+        .then(response => {
+            if (response.status === 401) {
+                alert("🔒 Please login to complete payment options.");
+                window.location.href = "/customer/login";
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.status === 'redirect') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/process-payment-view';
+                
+                const inputs = {
+                    'grand_total': data.grand_total,
+                    'cart_json': JSON.stringify(data.cart_data),
+                    'fulfillment_type': type,
+                    'fulfillment_details': details
+                };
+
+                for (const [key, val] of Object.entries(inputs)) {
+                    const el = document.createElement('input');
+                    el.type = 'hidden';
+                    el.name = key;
+                    el.value = val;
+                    form.appendChild(el);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
+</script>
+ 
+       
+   
+<script>
+    let cart = [];
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartEmptyMsg = document.getElementById('cart-empty-msg');
+    const cartCountBadge = document.getElementById('cart-count-badge');
+    const cartSubtotalEl = document.getElementById('cart-subtotal');
+    const cartTaxEl = document.getElementById('cart-tax');
+    const cartTotalEl = document.getElementById('cart-total');
+    const checkoutBtn = document.getElementById('checkout-btn');
+
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id');
+            const title = button.getAttribute('data-title');
+            const price = parseFloat(button.getAttribute('data-price'));
+            addToCart(id, title, price);
+        });
+    });
+
+    function addToCart(id, title, price) {
+        const existingItem = cart.find(item => item.id === id);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ id, title, price, quantity: 1 });
+        }
+        updateCartUI();
+    }
+
+    function changeQuantity(id, delta) {
+        const item = cart.find(item => item.id === id);
+        if (!item) return;
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        if (cart.length === 0) {
+            cartEmptyMsg.style.display = 'block';
+            cartItemsContainer.innerHTML = '';
+            checkoutBtn.disabled = true;
+            checkoutBtn.style.background = '#94a3b8';
+        } else {
+            cartEmptyMsg.style.display = 'none';
+            checkoutBtn.disabled = false;
+            checkoutBtn.style.background = '#22c55e';
+            
+            cartItemsContainer.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight: 500;">${item.title}</div>
+                        <div style="font-size: 0.85rem; color: #64748b;">$${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="cart-qty-btn" onclick="changeQuantity('${item.id}', -1)">-</button>
+                        <span style="min-width: 20px; text-align: center;">${item.quantity}</span>
+                        <button class="cart-qty-btn" onclick="changeQuantity('${item.id}', 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const tax = subtotal * 0.0825;
+        const total = subtotal + tax;
+
+        cartCountBadge.innerText = totalItemsCount;
+        cartSubtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+        cartTaxEl.innerText = `$${tax.toFixed(2)}`;
+        cartTotalEl.innerText = `$${total.toFixed(2)}`;
+    }
+
+ // Replace your previous checkoutBtn event listener block with updated logic
+    checkoutBtn.addEventListener('click', () => {
+        if (cart.length === 0) return;
+
+        fetch('/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart: cart })
+        })
+        .then(response => {
+            if (response.status === 401) {
+                alert("🔒 Please login to complete your payment!");
+                window.location.href = "/customer/login";
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.status === 'redirect') {
+                // To keep the application simple and avoid extra routing engines, 
+                // we build a temporary, self-submitting HTML form element that securely routes 
+                // data payloads straight into our secure payment view wrapper.
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/process-payment-view'; // Render the payment wrapper intermediate view
+                
+                const totalInput = document.createElement('input');
+                totalInput.type = 'hidden';
+                totalInput.name = 'grand_total';
+                totalInput.value = data.grand_total;
+                
+                const dataInput = document.createElement('input');
+                dataInput.type = 'hidden';
+                dataInput.name = 'cart_json';
+                dataInput.value = JSON.stringify(data.cart_data);
+                
+                form.appendChild(totalInput);
+                form.appendChild(dataInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        })
+        .catch(err => console.error("Error linking transactional streams:", err));
+    });
+</script>
+
+{% endblock %}
