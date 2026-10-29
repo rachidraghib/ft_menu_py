@@ -15,6 +15,33 @@ app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+
+import os
+
+# Setup a data directory path that can map to Render's persistent disk
+# Locally it will default to a 'data' folder inside your project
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+DB_DIR = os.environ.get('DB_DIR', os.path.join(BASE_DIR, 'data'))
+
+if not os.path.exists(DB_DIR):
+    os.makedirs(DB_DIR)
+
+DATABASE_PATH = os.path.join(DB_DIR, 'restaurant.db')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ##############################################
 def get_db_connection():
     conn = sqlite3.connect('restaurant.db')
