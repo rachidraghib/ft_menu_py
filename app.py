@@ -14,7 +14,7 @@ ADMIN_PASSWORD = "password123"
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
+##############################################
 
 import os
 
